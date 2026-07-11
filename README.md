@@ -1,18 +1,6 @@
 # Classic-Car-Restoration-Shop-Portfolio-ProdeskIT
 A shop-floor board for a classic car restoration business — vanilla HTML/CSS/JS, no frameworks. Handles spotty connections, invalid input, and full a11y out of the box.
 
-## Live preview
-
-Open `portfolio.html` directly in a browser, or serve the folder locally:
-
-## Project structure
-.
-├── index.html          # Semantic HTML5 markup, all sections
-├── styles.css          # Design tokens + all component styles
-├── script.js              # State, rendering, validation, simulated network
-├─ portfolio.html  # Single-file bundle (CSS + JS inlined)
-└── README.me
-
 ## Features
 
 **Board**

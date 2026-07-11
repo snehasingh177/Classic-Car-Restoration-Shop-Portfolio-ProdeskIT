@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironclad &amp; Chrome — Restoration Shop Portfolio</title>
+<meta name="description" content="Digital work-order portfolio for the shop floor: track restorations, log new intake, and find clients in seconds.">
+<style>
+/* =========================================================
+   TOKENS — monochromatic corporate system.
+   Every color used anywhere in this file must be one of
+   these variables. No rogue hex values.
+   ========================================================= */
+:root {
+  /* grayscale base */
+  --charcoal-900: #161616;
+  --charcoal-800: #232323;
+  --charcoal-700: #363634;
+  --steel-600: #57564f;
+  --steel-400: #837f74;
+  --steel-300: #ada89a;
+  --steel-200: #d8d4c6;
+  --paper-100: #f2efe6;
+  --paper-000: #fbfaf5;
+
+  /* single system accent — brushed copper, gauge-needle */
+  --accent-copper: #a8622f;
+  --accent-copper-dim: #7c4a25;
+
+  /* required functional color for validation states (spec-mandated) */
+  --signal-red: #a3311c;
+  --signal-red-bg: #f7e6e1;
+  --signal-green: #3f6b3f;
+
+  /* type */
+  --font-display: Georgia, "Times New Roman", "Noto Serif", serif;
+  --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Courier New", ui-monospace, monospace;
+
+  /* spacing — strict 16/32 steps */
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 32px;
+  --sp-4: 48px;
+  --sp-5: 64px;
+
+  --radius: 3px;
+  --border: 1px solid var(--steel-200);
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--paper-100);
+  color: var(--charcoal-800);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; margin: 0; }
+p { margin: 0 0 var(--sp-2); }
+ul { margin: 0; padding: 0; list-style: none; }
+img, svg { display: block; max-width: 100%; }
+button { font-family: inherit; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--sp-2);
+  top: -100px;
+  background: var(--charcoal-900);
+  color: var(--paper-000);
+  padding: var(--sp-1) var(--sp-2);
+  z-index: 100;
+  transition: top .15s ease;
+  border-radius: var(--radius);
+}
+.skip-link:focus { top: var(--sp-2); }
+
+/* consistent visible focus ring everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent-copper);
+  outline-offset: 2px;
+}
+
+.section-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--sp-4) var(--sp-2);
+}
+
+.section-heading {
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  color: var(--charcoal-900);
+  margin-bottom: var(--sp-1);
+}
+.section-lede {
+  color: var(--steel-600);
+  max-width: 60ch;
+  margin-bottom: var(--sp-3);
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.site-header {
+  background: var(--charcoal-900);
+  color: var(--paper-000);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 3px solid var(--accent-copper);
+}
+.header-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--sp-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  text-decoration: none;
+  color: inherit;
+}
+.brand-mark { color: var(--paper-000); flex-shrink: 0; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; }
+.brand-sub { font-size: .75rem; color: var(--steel-300); letter-spacing: .03em; text-transform: uppercase; }
+
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--steel-600);
+  border-radius: var(--radius);
+  padding: var(--sp-1);
+  color: var(--paper-000);
+  cursor: pointer;
+}
+.nav-toggle-bar,
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  position: relative;
+}
+.nav-toggle-bar::before { content: ""; position: absolute; top: -6px; }
+.nav-toggle-bar::after { content: ""; position: absolute; top: 6px; }
+
+.site-nav ul { display: flex; gap: var(--sp-3); }
+.site-nav a {
+  color: var(--paper-000);
+  text-decoration: none;
+  font-size: .95rem;
+  padding: var(--sp-1) 0;
+  border-bottom: 2px solid transparent;
+}
+.site-nav a:hover,
+.site-nav a:focus-visible { border-bottom-color: var(--accent-copper); }
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero {
+  background: var(--charcoal-800);
+  color: var(--paper-000);
+}
+.hero-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-2);
+  max-width: 760px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .75rem;
+  color: var(--accent-copper);
+  margin-bottom: var(--sp-2);
+}
+.hero h1 {
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  line-height: 1.1;
+  margin-bottom: var(--sp-2);
+}
+.hero-copy { color: var(--steel-300); font-size: 1.05rem; max-width: 55ch; }
+
+/* =========================================================
+   DASHBOARD / GAUGES  (signature element)
+   An instrument-cluster panel: brushed-metal + blueprint
+   texture behind a row of analog speedometer-style gauges.
+   Still built entirely from the token palette above.
+   ========================================================= */
+.dashboard {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(168,98,47,.10), transparent 55%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 10px),
+    linear-gradient(180deg, var(--charcoal-900), var(--charcoal-800) 60%, var(--charcoal-900));
+  color: var(--paper-000);
+  border-bottom: 3px solid var(--accent-copper);
+  overflow: hidden;
+}
+/* faint blueprint grid overlay */
+.dashboard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(216,212,198,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(216,212,198,.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  pointer-events: none;
+}
+.dashboard .section-inner { position: relative; }
+.dashboard .section-heading { color: var(--paper-000); }
+.dashboard .section-heading::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 3px;
+  margin-top: var(--sp-1);
+  background: var(--accent-copper);
+}
+.dashboard-eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: .72rem;
+  color: var(--steel-300);
+  margin-bottom: 4px;
+}
+.dashboard .section-lede { color: var(--steel-300); }
+
+.gauge-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+.gauge-card {
+  position: relative;
+  border-radius: 10px;
+  padding: var(--sp-3) var(--sp-2) var(--sp-2);
+  text-align: center;
+  background: linear-gradient(160deg, var(--charcoal-700), var(--charcoal-900) 75%);
+  border: 1px solid rgba(216,212,198,.14);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.05) inset,
+    0 18px 34px -18px rgba(0,0,0,.65);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.gauge-card:hover,
+.gauge-card:focus-within {
+  transform: translateY(-4px);
+  border-color: rgba(168,98,47,.55);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.06) inset,
+    0 22px 40px -16px rgba(0,0,0,.7),
+    0 0 0 1px rgba(168,98,47,.25);
+}
+/* four corner rivets — a small, deliberate industrial detail */
+.gauge-card::before,
+.gauge-card::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(216,212,198,.25);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.4) inset;
+}
+.gauge-card::before { left: 10px; }
+.gauge-card::after { right: 10px; }
+
+.gauge-analog { width: 100%; max-width: 168px; margin: 0 auto; display: block; }
+.gauge-track { fill: none; stroke: rgba(216,212,198,.18); stroke-width: 8; stroke-linecap: round; }
+.gauge-progress { fill: none; stroke: var(--accent-copper); stroke-width: 8; stroke-linecap: round; filter: drop-shadow(0 0 5px rgba(168,98,47,.65)); }
+.gauge-tick { stroke: rgba(216,212,198,.35); stroke-width: 2; }
+.gauge-needle { stroke: var(--paper-000); stroke-width: 2.5; stroke-linecap: round; }
+.gauge-hub { fill: var(--accent-copper); }
+
+.gauge-readout {
+  margin-top: -6px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: .01em;
+  color: var(--paper-000);
+  line-height: 1;
+}
+.gauge-readout-unit {
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--steel-300);
+  margin-left: 2px;
+}
+.gauge-label {
+  margin-top: var(--sp-1);
+  font-size: .74rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent-copper);
+  font-weight: 700;
+}
+.gauge-detail { font-size: .82rem; color: var(--steel-300); margin-top: 2px; }
+
+/* =========================================================
+   TOOLBAR / FILTER FORM
+   ========================================================= */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+  padding: var(--sp-2);
+  background: var(--paper-000);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+.field { display: flex; flex-direction: column; gap: 6px; flex: 1 1 200px; }
+.field-search { flex: 2 1 260px; }
+.field label { font-size: .85rem; font-weight: 600; color: var(--charcoal-800); }
+.field input,
+.field select,
+.field textarea {
+  padding: var(--sp-1);
+  border: 1px solid var(--steel-300);
+  border-radius: var(--radius);
+  font-size: .95rem;
+  background: var(--paper-000);
+  color: var(--charcoal-900);
+  font-family: inherit;
+}
+.field input:invalid[data-touched="true"] { border-color: var(--signal-red); }
+.field.has-error input,
+.field.has-error select,
+.field.has-error textarea {
+  border-color: var(--signal-red);
+  background: var(--signal-red-bg);
+}
+.error-msg {
+  font-size: .82rem;
+  color: var(--signal-red);
+  min-height: 1.1em;
+  margin: 0;
+}
+.field-hint { font-size: .8rem; color: var(--steel-600); margin: 0; }
+.req { color: var(--signal-red); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius);
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--charcoal-900); color: var(--paper-000); }
+.btn-primary:hover { background: var(--accent-copper-dim); }
+.btn-ghost { background: transparent; color: var(--steel-600); border-color: var(--steel-300); }
+.btn-ghost:hover { color: var(--charcoal-900); border-color: var(--charcoal-900); }
+.btn-outline { background: var(--paper-000); color: var(--charcoal-900); border-color: var(--charcoal-900); }
+.btn-outline:hover { background: var(--charcoal-900); color: var(--paper-000); }
+.btn-small { padding: 4px var(--sp-1); font-size: .8rem; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.btn-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: var(--paper-000);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =========================================================
+   BOARD — projects grid, loading, empty
+   ========================================================= */
+.board-status {
+  font-size: .85rem;
+  color: var(--steel-600);
+  margin-bottom: var(--sp-2);
+  min-height: 1.2em;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-2);
+}
+
+.card {
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--paper-000);
+  padding: var(--sp-2);
+  border-left: 4px solid var(--steel-300);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.card[data-status="intake"]     { border-left-color: var(--steel-400); }
+.card[data-status="teardown"]   { border-left-color: var(--steel-600); }
+.card[data-status="bodywork"]   { border-left-color: var(--accent-copper); }
+.card[data-status="paint"]      { border-left-color: var(--accent-copper); }
+.card[data-status="mechanical"] { border-left-color: var(--charcoal-700); }
+.card[data-status="reassembly"] { border-left-color: var(--charcoal-800); }
+.card[data-status="ready"]      { border-left-color: var(--signal-green); }
+
+.card-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--charcoal-900); }
+.card-client { font-size: .88rem; color: var(--steel-600); }
+.card-meta { font-size: .82rem; color: var(--steel-600); font-family: var(--font-mono); }
+.card-notes { font-size: .88rem; color: var(--charcoal-700); }
+.card-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-1); margin-top: auto; padding-top: var(--sp-1); }
+.status-pill {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--paper-100);
+  border: 1px solid var(--steel-300);
+  color: var(--charcoal-800);
+}
+
+/* skeleton loading */
+.skeleton-card {
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-2);
+  background: var(--paper-000);
+}
+.skeleton-line {
+  height: 12px;
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--steel-200) 25%, var(--paper-100) 37%, var(--steel-200) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  margin-bottom: var(--sp-1);
+}
+.skeleton-line.short { width: 60%; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+/* empty state */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--sp-4) var(--sp-2);
+  border: 1px dashed var(--steel-300);
+  border-radius: var(--radius);
+  color: var(--steel-600);
+}
+.empty-state h3 { color: var(--charcoal-800); margin-bottom: var(--sp-1); font-family: var(--font-display); }
+
+/* connectivity error state */
+.error-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--sp-4) var(--sp-2);
+  border: 1px solid var(--signal-red);
+  background: var(--signal-red-bg);
+  border-radius: var(--radius);
+  color: var(--signal-red);
+}
+.error-state h3 { margin-bottom: var(--sp-1); font-family: var(--font-display); }
+
+.board-actions { margin-top: var(--sp-2); }
+
+/* =========================================================
+   INTAKE FORM
+   ========================================================= */
+.intake { background: var(--paper-000); border-top: var(--border); }
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-2) var(--sp-3);
+}
+.field-wide { grid-column: 1 / -1; }
+.intake textarea { resize: vertical; }
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-2);
+  border-top: var(--border);
+}
+.form-status { font-size: .9rem; color: var(--steel-600); min-height: 1.2em; }
+.form-status[data-state="success"] { color: var(--signal-green); }
+.form-status[data-state="error"] { color: var(--signal-red); }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast {
+  position: fixed;
+  bottom: var(--sp-3);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--charcoal-900);
+  color: var(--paper-000);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--accent-copper);
+  font-size: .9rem;
+  z-index: 200;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.site-footer { background: var(--charcoal-900); color: var(--steel-300); }
+.footer-inner { padding: var(--sp-3) var(--sp-2); font-size: .85rem; display: flex; flex-direction: column; gap: 4px; }
+.footer-meta { color: var(--steel-400); }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 720px) {
+  .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
+  .site-nav {
+    display: none;
+    width: 100%;
+    order: 3;
+  }
+  .site-nav.open { display: block; }
+  .site-nav ul { flex-direction: column; gap: 0; padding-top: var(--sp-1); }
+  .site-nav a { display: block; padding: var(--sp-1) 0; }
+  .header-inner { flex-wrap: wrap; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .skeleton-line, .btn-spinner { animation: none; }
+}
+
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#top" class="brand" id="top">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34" role="img" aria-label="">
+          <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="20" cy="20" r="3.5" fill="currentColor"/>
+          <line x1="20" y1="20" x2="20" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="20" y1="20" x2="29" y2="26" stroke="var(--accent-copper)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">Ironclad &amp; Chrome</span>
+        <span class="brand-sub">Restoration Work-Order Board</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="primaryNav" type="button">
+      <span class="sr-only">Toggle navigation menu</span>
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="site-nav" id="primaryNav" aria-label="Primary">
+      <ul>
+        <li><a href="#dashboard">Shop Floor</a></li>
+        <li><a href="#projects">Restorations</a></li>
+        <li><a href="#intake">Log Intake</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-inner">
+      <p class="eyebrow">Shop floor board · updates live</p>
+      <h1 id="hero-heading">Every car on the lift, tracked to the bolt.</h1>
+      <p class="hero-copy">Replace the clipboard and the spreadsheet with one board your whole bay can read at a glance — intake to delivery.</p>
+    </div>
+  </section>
+
+  <section class="dashboard" id="dashboard" aria-labelledby="dashboard-heading">
+    <div class="section-inner">
+      <p class="dashboard-eyebrow">Live instrument panel</p>
+      <h2 id="dashboard-heading" class="section-heading">Shop Floor, Right Now</h2>
+      <p class="section-lede">Read the board the way you'd read a dash — one glance, no guessing.</p>
+      <div class="gauge-row" id="gaugeRow" aria-live="polite">
+        <!-- gauges injected by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <section class="projects" id="projects" aria-labelledby="projects-heading">
+    <div class="section-inner">
+      <div class="projects-header">
+        <h2 id="projects-heading" class="section-heading">Restorations on the Board</h2>
+        <p class="section-lede">Search, filter, and update status without leaving the floor.</p>
+      </div>
+
+      <form class="toolbar" id="filterForm" role="search" aria-label="Search and filter restorations">
+        <div class="field field-search">
+          <label for="searchInput">Search client or vehicle</label>
+          <input type="text" id="searchInput" name="search" placeholder="e.g. Mustang, VIN, or client name" autocomplete="off">
+        </div>
+        <div class="field field-status">
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter" name="statusFilter">
+            <option value="all">All statuses</option>
+            <option value="intake">Intake</option>
+            <option value="teardown">Teardown</option>
+            <option value="bodywork">Bodywork</option>
+            <option value="paint">Paint</option>
+            <option value="mechanical">Mechanical</option>
+            <option value="reassembly">Reassembly</option>
+            <option value="ready">Ready for Delivery</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-ghost" id="resetFilters">Clear filters</button>
+      </form>
+
+      <div class="board-status" id="boardStatus" role="status" aria-live="polite"></div>
+
+      <div class="board" id="board" aria-busy="false">
+        <!-- project cards, loading skeleton, or empty state injected here -->
+      </div>
+
+      <div class="board-actions">
+        <button type="button" class="btn btn-outline" id="retryLoad" hidden>Retry loading board</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="intake" id="intake" aria-labelledby="intake-heading">
+    <div class="section-inner">
+      <h2 id="intake-heading" class="section-heading">Log New Intake</h2>
+      <p class="section-lede">Every field marked required must be filled correctly before this goes on the board.</p>
+
+      <form id="intakeForm" novalidate>
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="clientName">Client name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="clientName" name="clientName" required aria-required="true" aria-describedby="err-clientName">
+            <p class="error-msg" id="err-clientName" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="clientPhone">Client phone <span class="req" aria-hidden="true">*</span></label>
+            <input type="tel" id="clientPhone" name="clientPhone" required aria-required="true" aria-describedby="err-clientPhone" placeholder="555-010-0100">
+            <p class="error-msg" id="err-clientPhone" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="carMake">Make <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="carMake" name="carMake" required aria-required="true" aria-describedby="err-carMake" placeholder="e.g. Chevrolet">
+            <p class="error-msg" id="err-carMake" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="carModel">Model <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="carModel" name="carModel" required aria-required="true" aria-describedby="err-carModel" placeholder="e.g. Bel Air">
+            <p class="error-msg" id="err-carModel" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="carYear">Model year <span class="req" aria-hidden="true">*</span></label>
+            <input type="number" id="carYear" name="carYear" required aria-required="true" aria-describedby="err-carYear" min="1900" max="2026" placeholder="e.g. 1957">
+            <p class="error-msg" id="err-carYear" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="vin">VIN / chassis number</label>
+            <input type="text" id="vin" name="vin" aria-describedby="err-vin hint-vin" placeholder="Optional, 5–17 characters">
+            <p class="field-hint" id="hint-vin">Leave blank if the plate hasn't been located yet.</p>
+            <p class="error-msg" id="err-vin" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="statusSelect">Starting status <span class="req" aria-hidden="true">*</span></label>
+            <select id="statusSelect" name="statusSelect" required aria-required="true" aria-describedby="err-statusSelect">
+              <option value="">Choose a status…</option>
+              <option value="intake">Intake</option>
+              <option value="teardown">Teardown</option>
+              <option value="bodywork">Bodywork</option>
+              <option value="paint">Paint</option>
+              <option value="mechanical">Mechanical</option>
+              <option value="reassembly">Reassembly</option>
+              <option value="ready">Ready for Delivery</option>
+            </select>
+            <p class="error-msg" id="err-statusSelect" aria-live="polite"></p>
+          </div>
+
+          <div class="field field-wide">
+            <label for="notes">Intake notes</label>
+            <textarea id="notes" name="notes" rows="3" aria-describedby="err-notes" placeholder="Condition, known issues, parts to source…"></textarea>
+            <p class="error-msg" id="err-notes" aria-live="polite"></p>
+          </div>
+
+        </div>
+
+        <div class="form-footer">
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          <button type="submit" class="btn btn-primary" id="submitIntake">
+            <span class="btn-label">Add to Board</span>
+            <span class="btn-spinner" aria-hidden="true" hidden></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="section-inner footer-inner">
+    <p>Ironclad &amp; Chrome Restoration Shop — internal work-order board.</p>
+    <p class="footer-meta">Built for the shop floor. Works offline-first; retries automatically on a weak connection.</p>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="alert" aria-live="assertive" hidden></div>
+
+<script>
+/* =========================================================
+   Ironclad & Chrome — Restoration Shop Portfolio
+   Vanilla JS. No frameworks, no external libs.
+   ========================================================= */
+(function () {
+  "use strict";
+
+  /* ---------------------------------------------------------
+     TELEMETRY (simulated analytics)
+     --------------------------------------------------------- */
+  function logAnalytics(action, detail) {
+    // eslint-disable-next-line no-console
+    console.log(
+      "[Analytics] User interacted with Classic Car Restoration Shop Portfolio",
+      { action: action, detail: detail || null, at: new Date().toISOString() }
+    );
+  }
+
+  /* ---------------------------------------------------------
+     SECURITY — sanitize all free-text input before it ever
+     touches state or the DOM. Escapes HTML-significant chars
+     so stored values cannot execute as markup/script.
+     --------------------------------------------------------- */
+  function sanitizeText(raw) {
+    if (typeof raw !== "string") return "";
+    return raw
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;")
+      .trim();
+  }
+
+  /* ---------------------------------------------------------
+     STATE — in-memory "database" for this session.
+     Seeded with a few realistic work orders.
+     --------------------------------------------------------- */
+  var STATUS_LABELS = {
+    intake: "Intake",
+    teardown: "Teardown",
+    bodywork: "Bodywork",
+    paint: "Paint",
+    mechanical: "Mechanical",
+    reassembly: "Reassembly",
+    ready: "Ready for Delivery"
+  };
+
+  var state = {
+    projects: [
+      { id: "p1", client: "R. Alvarez", make: "Chevrolet", model: "Bel Air", year: 1957, vin: "VC57B123456", status: "bodywork", notes: "Full quarter panel replacement, original trim salvageable." },
+      { id: "p2", client: "M. Okafor", make: "Ford", model: "Mustang", year: 1966, vin: "6F07C112233", status: "paint", notes: "Client wants factory Wimbledon White, single-stage." },
+      { id: "p3", client: "T. Nakamura", make: "Jaguar", model: "E-Type", year: 1962, vin: "", status: "mechanical", notes: "Rebuilding the XK engine, sourcing SU carbs." },
+      { id: "p4", client: "S. Kowalski", make: "Volkswagen", model: "Karmann Ghia", year: 1970, vin: "1102345678", status: "intake", notes: "Just arrived on the flatbed, full assessment pending." },
+      { id: "p5", client: "D. Patel", make: "Porsche", model: "356", year: 1959, vin: "", status: "ready", notes: "Final detail complete, awaiting client pickup Friday." }
+    ],
+    filterText: "",
+    filterStatus: "all",
+    boardLoaded: false,
+    boardError: false
+  };
+
+  var nextIdCounter = state.projects.length + 1;
+
+  /* ---------------------------------------------------------
+     SIMULATED NETWORK — mimics a spotty 3G connection.
+     Randomly fails ~15% of the time so the retry / error
+     path actually gets exercised, not just the happy path.
+     --------------------------------------------------------- */
+  function simulateNetworkFetch(payload, opts) {
+    opts = opts || {};
+    var delay = opts.delay || (500 + Math.random() * 900);
+    var failRate = typeof opts.failRate === "number" ? opts.failRate : 0.15;
+    return new Promise(function (resolve, reject) {
+      window.setTimeout(function () {
+        if (Math.random() < failRate) {
+          reject(new Error("Network request failed — connection dropped."));
+        } else {
+          resolve(payload);
+        }
+      }, delay);
+    });
+  }
+
+  /* ---------------------------------------------------------
+     DOM REFERENCES
+     --------------------------------------------------------- */
+  var boardEl = document.getElementById("board");
+  var boardStatusEl = document.getElementById("boardStatus");
+  var retryBtn = document.getElementById("retryLoad");
+  var gaugeRow = document.getElementById("gaugeRow");
+  var searchInput = document.getElementById("searchInput");
+  var statusFilter = document.getElementById("statusFilter");
+  var resetFiltersBtn = document.getElementById("resetFilters");
+  var intakeForm = document.getElementById("intakeForm");
+  var submitBtn = document.getElementById("submitIntake");
+  var formStatus = document.getElementById("formStatus");
+  var toastEl = document.getElementById("toast");
+  var navToggle = document.getElementById("navToggle");
+  var primaryNav = document.getElementById("primaryNav");
+
+  /* ---------------------------------------------------------
+     MOBILE NAV TOGGLE (keyboard accessible)
+     --------------------------------------------------------- */
+  navToggle.addEventListener("click", function () {
+    var isOpen = primaryNav.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  /* ---------------------------------------------------------
+     TOAST — brief, non-blocking confirmation messages
+     --------------------------------------------------------- */
+  var toastTimer = null;
+  function showToast(message) {
+    toastEl.textContent = message;
+    toastEl.hidden = false;
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () {
+      toastEl.hidden = true;
+    }, 3200);
+  }
+
+  /* ---------------------------------------------------------
+     GAUGES — analog speedometer SVG builder
+     Draws a semicircular track, a copper progress arc, five
+     tick marks, and a needle that points to the current
+     percentage — like a real dashboard, not a progress bar.
+     --------------------------------------------------------- */
+  function polar(cx, cy, r, angleDeg) {
+    var rad = (angleDeg * Math.PI) / 180;
+    return { x: cx + r * Math.cos(rad), y: cy - r * Math.sin(rad) };
+  }
+
+  function buildGaugeSVG(pct) {
+    var clamped = Math.max(0, Math.min(100, pct));
+    var cx = 60, cy = 58, r = 46;
+    var startAngle = 180, endAngle = 0;
+    var sweepAngle = startAngle - (clamped / 100) * (startAngle - endAngle);
+
+    var start = polar(cx, cy, r, startAngle);
+    var full = polar(cx, cy, r, endAngle);
+    var progressEnd = polar(cx, cy, r, sweepAngle);
+    var largeArc = (startAngle - sweepAngle) > 180 ? 1 : 0;
+
+    var trackPath = "M " + start.x + " " + start.y + " A " + r + " " + r + " 0 1 1 " + full.x + " " + full.y;
+    var progressPath = clamped > 0.5
+      ? "M " + start.x + " " + start.y + " A " + r + " " + r + " 0 " + largeArc + " 1 " + progressEnd.x + " " + progressEnd.y
+      : "";
+
+    var ticks = [0, 25, 50, 75, 100].map(function (t) {
+      var a = startAngle - (t / 100) * (startAngle - endAngle);
+      var inner = polar(cx, cy, r - 9, a);
+      var outer = polar(cx, cy, r - 1, a);
+      return '<line class="gauge-tick" x1="' + inner.x + '" y1="' + inner.y + '" x2="' + outer.x + '" y2="' + outer.y + '"/>';
+    }).join("");
+
+    var needleTip = polar(cx, cy, r - 14, sweepAngle);
+
+    return (
+      '<svg class="gauge-analog" viewBox="0 0 120 64" role="presentation" aria-hidden="true">' +
+        '<path class="gauge-track" d="' + trackPath + '"/>' +
+        (progressPath ? '<path class="gauge-progress" d="' + progressPath + '"/>' : '') +
+        ticks +
+        '<line class="gauge-needle" x1="' + cx + '" y1="' + cy + '" x2="' + needleTip.x + '" y2="' + needleTip.y + '"/>' +
+        '<circle class="gauge-hub" cx="' + cx + '" cy="' + cy + '" r="4"/>' +
+      '</svg>'
+    );
+  }
+
+  /* ---------------------------------------------------------
+     GAUGES — dashboard summary
+     --------------------------------------------------------- */
+  function renderGauges() {
+    var total = state.projects.length;
+    var readyCount = state.projects.filter(function (p) { return p.status === "ready"; }).length;
+    var inProgress = total - readyCount;
+    var pctReady = total ? Math.round((readyCount / total) * 100) : 0;
+
+    var statusCounts = {};
+    state.projects.forEach(function (p) {
+      statusCounts[p.status] = (statusCounts[p.status] || 0) + 1;
+    });
+    var busiestStatus = Object.keys(statusCounts).sort(function (a, b) {
+      return statusCounts[b] - statusCounts[a];
+    })[0];
+    var busiestPct = total ? Math.round((statusCounts[busiestStatus] || 0) / total * 100) : 0;
+
+    var gauges = [
+      { label: "On the Board", value: total, pct: 100, detail: total === 1 ? "1 vehicle tracked" : total + " vehicles tracked" },
+      { label: "In Progress", value: inProgress, pct: total ? Math.round((inProgress / total) * 100) : 0, detail: "Not yet ready for delivery" },
+      { label: "Ready for Delivery", value: readyCount, pct: pctReady, detail: pctReady + "% of the board" },
+      { label: "Busiest Stage", value: busiestStatus ? STATUS_LABELS[busiestStatus] : "—", pct: busiestPct, detail: busiestStatus ? busiestPct + "% of vehicles" : "No data yet" }
+    ];
+
+    gaugeRow.innerHTML = gauges.map(function (g) {
+      var srLabel = sanitizeText(String(g.label)) + ": " + sanitizeText(String(g.value)) + ", " + sanitizeText(String(g.detail));
+      return (
+        '<div class="gauge-card" role="img" aria-label="' + srLabel + '">' +
+          buildGaugeSVG(g.pct) +
+          '<p class="gauge-readout">' + sanitizeText(String(g.value)) +
+            (typeof g.value === "number" ? '<span class="gauge-readout-unit">' + (g.label === "Ready for Delivery" ? "cars" : "") + '</span>' : '') +
+          '</p>' +
+          '<p class="gauge-label">' + sanitizeText(g.label) + '</p>' +
+          '<p class="gauge-detail">' + sanitizeText(g.detail) + '</p>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  /* ---------------------------------------------------------
+     BOARD RENDERING — loading / error / empty / data states
+     --------------------------------------------------------- */
+  function renderSkeleton() {
+    boardEl.setAttribute("aria-busy", "true");
+    boardStatusEl.textContent = "Loading restorations…";
+    var cards = "";
+    for (var i = 0; i < 4; i++) {
+      cards +=
+        '<div class="skeleton-card" aria-hidden="true">' +
+          '<div class="skeleton-line" style="width:70%"></div>' +
+          '<div class="skeleton-line short"></div>' +
+          '<div class="skeleton-line" style="width:90%"></div>' +
+        '</div>';
+    }
+    boardEl.innerHTML = cards;
+    retryBtn.hidden = true;
+  }
+
+  function renderError() {
+    boardEl.setAttribute("aria-busy", "false");
+    boardStatusEl.textContent = "The board couldn't load.";
+    boardEl.innerHTML =
+      '<div class="error-state">' +
+        '<h3>Connection dropped</h3>' +
+        '<p>We couldn\u2019t reach the board on this connection. Your data is safe — nothing was lost.</p>' +
+      '</div>';
+    retryBtn.hidden = false;
+  }
+
+  function getFilteredProjects() {
+    var text = state.filterText.trim().toLowerCase();
+    return state.projects.filter(function (p) {
+      var matchesStatus = state.filterStatus === "all" || p.status === state.filterStatus;
+      if (!matchesStatus) return false;
+      if (!text) return true;
+      var haystack = [p.client, p.make, p.model, p.vin, String(p.year)].join(" ").toLowerCase();
+      return haystack.indexOf(text) !== -1;
+    });
+  }
+
+  function renderBoard() {
+    boardEl.setAttribute("aria-busy", "false");
+    retryBtn.hidden = true;
+
+    if (state.projects.length === 0) {
+      boardStatusEl.textContent = "No vehicles on the board yet.";
+      boardEl.innerHTML =
+        '<div class="empty-state">' +
+          '<h3>No data found</h3>' +
+          '<p>Nothing has been logged yet. Use \u201cLog New Intake\u201d below to add the first vehicle.</p>' +
+        '</div>';
+      return;
+    }
+
+    var filtered = getFilteredProjects();
+
+    if (filtered.length === 0) {
+      boardStatusEl.textContent = "0 results for the current search and filter.";
+      boardEl.innerHTML =
+        '<div class="empty-state">' +
+          '<h3>No data found</h3>' +
+          '<p>No restorations match this search or status filter. Try clearing the filters.</p>' +
+        '</div>';
+      return;
+    }
+
+    boardStatusEl.textContent = filtered.length + " of " + state.projects.length + " restorations shown.";
+
+    boardEl.innerHTML = filtered.map(function (p) {
+      var vinLine = p.vin ? "VIN " + sanitizeText(p.vin) : "VIN not yet recorded";
+      return (
+        '<article class="card" data-status="' + p.status + '" aria-label="' + sanitizeText(p.year + " " + p.make + " " + p.model) + '">' +
+          '<h3 class="card-title">' + sanitizeText(String(p.year)) + " " + sanitizeText(p.make) + " " + sanitizeText(p.model) + '</h3>' +
+          '<p class="card-client">Client: ' + sanitizeText(p.client) + '</p>' +
+          '<p class="card-meta">' + vinLine + '</p>' +
+          (p.notes ? '<p class="card-notes">' + sanitizeText(p.notes) + '</p>' : '') +
+          '<div class="card-footer">' +
+            '<span class="status-pill">' + sanitizeText(STATUS_LABELS[p.status] || p.status) + '</span>' +
+            '<button type="button" class="btn btn-ghost btn-small" data-remove="' + p.id + '" aria-label="Remove ' + sanitizeText(p.year + " " + p.make + " " + p.model) + ' from board">Remove</button>' +
+          '</div>' +
+        '</article>'
+      );
+    }).join("");
+
+    // wire up per-card remove buttons
+    Array.prototype.forEach.call(boardEl.querySelectorAll("[data-remove]"), function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-remove");
+        state.projects = state.projects.filter(function (p) { return p.id !== id; });
+        logAnalytics("remove_project", { id: id });
+        showToast("Removed from board.");
+        renderBoard();
+        renderGauges();
+      });
+    });
+  }
+
+  function loadBoard(isRetry) {
+    state.boardError = false;
+    renderSkeleton();
+    simulateNetworkFetch(state.projects)
+      .then(function () {
+        state.boardLoaded = true;
+        renderBoard();
+        renderGauges();
+        if (isRetry) showToast("Board reconnected.");
+      })
+      .catch(function () {
+        state.boardError = true;
+        renderError();
+      });
+  }
+
+  retryBtn.addEventListener("click", function () {
+    logAnalytics("retry_board_load");
+    loadBoard(true);
+  });
+
+  /* ---------------------------------------------------------
+     FILTERS
+     --------------------------------------------------------- */
+  var searchDebounce = null;
+  searchInput.addEventListener("input", function () {
+    window.clearTimeout(searchDebounce);
+    searchDebounce = window.setTimeout(function () {
+      state.filterText = searchInput.value;
+      renderBoard();
+      logAnalytics("search_projects", { query: sanitizeText(searchInput.value) });
+    }, 200);
+  });
+
+  statusFilter.addEventListener("change", function () {
+    state.filterStatus = statusFilter.value;
+    renderBoard();
+    logAnalytics("filter_projects", { status: state.filterStatus });
+  });
+
+  resetFiltersBtn.addEventListener("click", function () {
+    searchInput.value = "";
+    statusFilter.value = "all";
+    state.filterText = "";
+    state.filterStatus = "all";
+    renderBoard();
+    logAnalytics("clear_filters");
+  });
+
+  /* ---------------------------------------------------------
+     INTAKE FORM — validation, sanitization, submission
+     --------------------------------------------------------- */
+  var fieldConfig = [
+    { id: "clientName", errId: "err-clientName", validate: function (v) {
+        if (!v.trim()) return "Enter the client's name.";
+        return "";
+      } },
+    { id: "clientPhone", errId: "err-clientPhone", validate: function (v) {
+        if (!v.trim()) return "Enter a phone number.";
+        var digits = v.replace(/\D/g, "");
+        if (digits.length < 7) return "Enter a valid phone number.";
+        return "";
+      } },
+    { id: "carMake", errId: "err-carMake", validate: function (v) {
+        if (!v.trim()) return "Enter the vehicle make.";
+        return "";
+      } },
+    { id: "carModel", errId: "err-carModel", validate: function (v) {
+        if (!v.trim()) return "Enter the vehicle model.";
+        return "";
+      } },
+    { id: "carYear", errId: "err-carYear", validate: function (v) {
+        if (!v.trim()) return "Enter the model year.";
+        var year = Number(v);
+        if (!Number.isInteger(year) || year < 1900 || year > 2026) {
+          return "Enter a year between 1900 and 2026.";
+        }
+        return "";
+      } },
+    { id: "vin", errId: "err-vin", validate: function (v) {
+        if (!v.trim()) return ""; // optional
+        if (v.trim().length < 5 || v.trim().length > 17) return "VIN should be 5–17 characters, or left blank.";
+        return "";
+      } },
+    { id: "statusSelect", errId: "err-statusSelect", validate: function (v) {
+        if (!v) return "Choose a starting status.";
+        return "";
+      } },
+    { id: "notes", errId: "err-notes", validate: function () { return ""; } }
+  ];
+
+  function setFieldError(fieldId, errId, message) {
+    var input = document.getElementById(fieldId);
+    var errEl = document.getElementById(errId);
+    var wrapper = input.closest(".field");
+    if (message) {
+      wrapper.classList.add("has-error");
+      input.setAttribute("aria-invalid", "true");
+      errEl.textContent = message;
+    } else {
+      wrapper.classList.remove("has-error");
+      input.removeAttribute("aria-invalid");
+      errEl.textContent = "";
+    }
+  }
+
+  function validateForm() {
+    var firstInvalidEl = null;
+    var isValid = true;
+    fieldConfig.forEach(function (cfg) {
+      var input = document.getElementById(cfg.id);
+      var message = cfg.validate(input.value);
+      setFieldError(cfg.id, cfg.errId, message);
+      if (message) {
+        isValid = false;
+        if (!firstInvalidEl) firstInvalidEl = input;
+      }
+    });
+    if (firstInvalidEl) firstInvalidEl.focus();
+    return isValid;
+  }
+
+  // live-clear errors as the user fixes them
+  fieldConfig.forEach(function (cfg) {
+    var input = document.getElementById(cfg.id);
+    input.addEventListener("input", function () {
+      var message = cfg.validate(input.value);
+      if (!message) setFieldError(cfg.id, cfg.errId, "");
+    });
+    input.addEventListener("blur", function () {
+      input.setAttribute("data-touched", "true");
+    });
+  });
+
+  intakeForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      formStatus.textContent = "Fix the highlighted fields before adding this vehicle.";
+      formStatus.setAttribute("data-state", "error");
+      logAnalytics("intake_validation_failed");
+      return;
+    }
+
+    var payload = {
+      id: "p" + (nextIdCounter++),
+      client: sanitizeText(document.getElementById("clientName").value),
+      phone: sanitizeText(document.getElementById("clientPhone").value),
+      make: sanitizeText(document.getElementById("carMake").value),
+      model: sanitizeText(document.getElementById("carModel").value),
+      year: Number(document.getElementById("carYear").value),
+      vin: sanitizeText(document.getElementById("vin").value),
+      status: document.getElementById("statusSelect").value,
+      notes: sanitizeText(document.getElementById("notes").value)
+    };
+
+    // simulate the network write, with loading state + retry-on-failure
+    submitBtn.disabled = true;
+    submitBtn.querySelector(".btn-spinner").hidden = false;
+    formStatus.textContent = "Saving to the board…";
+    formStatus.setAttribute("data-state", "");
+
+    submitIntake(payload, 0);
+  });
+
+  function submitIntake(payload, attempt) {
+    simulateNetworkFetch(payload, { failRate: 0.2 })
+      .then(function () {
+        state.projects.unshift(payload);
+        submitBtn.disabled = false;
+        submitBtn.querySelector(".btn-spinner").hidden = true;
+        formStatus.textContent = "Added " + payload.year + " " + payload.make + " " + payload.model + " to the board.";
+        formStatus.setAttribute("data-state", "success");
+        intakeForm.reset();
+        fieldConfig.forEach(function (cfg) { setFieldError(cfg.id, cfg.errId, ""); });
+        renderBoard();
+        renderGauges();
+        showToast("Vehicle added to the board.");
+        logAnalytics("intake_submitted", { status: payload.status });
+      })
+      .catch(function () {
+        if (attempt < 1) {
+          formStatus.textContent = "Connection dropped, retrying…";
+          submitIntake(payload, attempt + 1);
+        } else {
+          submitBtn.disabled = false;
+          submitBtn.querySelector(".btn-spinner").hidden = true;
+          formStatus.textContent = "Couldn't save — check the connection and try again.";
+          formStatus.setAttribute("data-state", "error");
+          logAnalytics("intake_submit_failed");
+        }
+      });
+  }
+
+  /* ---------------------------------------------------------
+     INIT
+     --------------------------------------------------------- */
+  loadBoard(false);
+  renderGauges();
+})();
+
+</script>
+</body>
+</html>

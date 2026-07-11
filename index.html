@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironclad &amp; Chrome — Restoration Shop Portfolio</title>
+<meta name="description" content="Digital work-order portfolio for the shop floor: track restorations, log new intake, and find clients in seconds.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#top" class="brand" id="top">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34" role="img" aria-label="">
+          <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="20" cy="20" r="3.5" fill="currentColor"/>
+          <line x1="20" y1="20" x2="20" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="20" y1="20" x2="29" y2="26" stroke="var(--accent-copper)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">Ironclad &amp; Chrome</span>
+        <span class="brand-sub">Restoration Work-Order Board</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="primaryNav" type="button">
+      <span class="sr-only">Toggle navigation menu</span>
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="site-nav" id="primaryNav" aria-label="Primary">
+      <ul>
+        <li><a href="#dashboard">Shop Floor</a></li>
+        <li><a href="#projects">Restorations</a></li>
+        <li><a href="#intake">Log Intake</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-inner">
+      <p class="eyebrow">Shop floor board · updates live</p>
+      <h1 id="hero-heading">Every car on the lift, tracked to the bolt.</h1>
+      <p class="hero-copy">Replace the clipboard and the spreadsheet with one board your whole bay can read at a glance — intake to delivery.</p>
+    </div>
+  </section>
+
+  <section class="dashboard" id="dashboard" aria-labelledby="dashboard-heading">
+    <div class="section-inner">
+      <p class="dashboard-eyebrow">Live instrument panel</p>
+      <h2 id="dashboard-heading" class="section-heading">Shop Floor, Right Now</h2>
+      <p class="section-lede">Read the board the way you'd read a dash — one glance, no guessing.</p>
+      <div class="gauge-row" id="gaugeRow" aria-live="polite">
+        <!-- gauges injected by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <section class="projects" id="projects" aria-labelledby="projects-heading">
+    <div class="section-inner">
+      <div class="projects-header">
+        <h2 id="projects-heading" class="section-heading">Restorations on the Board</h2>
+        <p class="section-lede">Search, filter, and update status without leaving the floor.</p>
+      </div>
+
+      <form class="toolbar" id="filterForm" role="search" aria-label="Search and filter restorations">
+        <div class="field field-search">
+          <label for="searchInput">Search client or vehicle</label>
+          <input type="text" id="searchInput" name="search" placeholder="e.g. Mustang, VIN, or client name" autocomplete="off">
+        </div>
+        <div class="field field-status">
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter" name="statusFilter">
+            <option value="all">All statuses</option>
+            <option value="intake">Intake</option>
+            <option value="teardown">Teardown</option>
+            <option value="bodywork">Bodywork</option>
+            <option value="paint">Paint</option>
+            <option value="mechanical">Mechanical</option>
+            <option value="reassembly">Reassembly</option>
+            <option value="ready">Ready for Delivery</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-ghost" id="resetFilters">Clear filters</button>
+      </form>
+
+      <div class="board-status" id="boardStatus" role="status" aria-live="polite"></div>
+
+      <div class="board" id="board" aria-busy="false">
+        <!-- project cards, loading skeleton, or empty state injected here -->
+      </div>
+
+      <div class="board-actions">
+        <button type="button" class="btn btn-outline" id="retryLoad" hidden>Retry loading board</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="intake" id="intake" aria-labelledby="intake-heading">
+    <div class="section-inner">
+      <h2 id="intake-heading" class="section-heading">Log New Intake</h2>
+      <p class="section-lede">Every field marked required must be filled correctly before this goes on the board.</p>
+
+      <form id="intakeForm" novalidate>
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="clientName">Client name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="clientName" name="clientName" required aria-required="true" aria-describedby="err-clientName">
+            <p class="error-msg" id="err-clientName" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="clientPhone">Client phone <span class="req" aria-hidden="true">*</span></label>
+            <input type="tel" id="clientPhone" name="clientPhone" required aria-required="true" aria-describedby="err-clientPhone" placeholder="555-010-0100">
+            <p class="error-msg" id="err-clientPhone" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="carMake">Make <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="carMake" name="carMake" required aria-required="true" aria-describedby="err-carMake" placeholder="e.g. Chevrolet">
+            <p class="error-msg" id="err-carMake" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="carModel">Model <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="carModel" name="carModel" required aria-required="true" aria-describedby="err-carModel" placeholder="e.g. Bel Air">
+            <p class="error-msg" id="err-carModel" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="carYear">Model year <span class="req" aria-hidden="true">*</span></label>
+            <input type="number" id="carYear" name="carYear" required aria-required="true" aria-describedby="err-carYear" min="1900" max="2026" placeholder="e.g. 1957">
+            <p class="error-msg" id="err-carYear" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="vin">VIN / chassis number</label>
+            <input type="text" id="vin" name="vin" aria-describedby="err-vin hint-vin" placeholder="Optional, 5–17 characters">
+            <p class="field-hint" id="hint-vin">Leave blank if the plate hasn't been located yet.</p>
+            <p class="error-msg" id="err-vin" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="statusSelect">Starting status <span class="req" aria-hidden="true">*</span></label>
+            <select id="statusSelect" name="statusSelect" required aria-required="true" aria-describedby="err-statusSelect">
+              <option value="">Choose a status…</option>
+              <option value="intake">Intake</option>
+              <option value="teardown">Teardown</option>
+              <option value="bodywork">Bodywork</option>
+              <option value="paint">Paint</option>
+              <option value="mechanical">Mechanical</option>
+              <option value="reassembly">Reassembly</option>
+              <option value="ready">Ready for Delivery</option>
+            </select>
+            <p class="error-msg" id="err-statusSelect" aria-live="polite"></p>
+          </div>
+
+          <div class="field field-wide">
+            <label for="notes">Intake notes</label>
+            <textarea id="notes" name="notes" rows="3" aria-describedby="err-notes" placeholder="Condition, known issues, parts to source…"></textarea>
+            <p class="error-msg" id="err-notes" aria-live="polite"></p>
+          </div>
+
+        </div>
+
+        <div class="form-footer">
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          <button type="submit" class="btn btn-primary" id="submitIntake">
+            <span class="btn-label">Add to Board</span>
+            <span class="btn-spinner" aria-hidden="true" hidden></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="section-inner footer-inner">
+    <p>Ironclad &amp; Chrome Restoration Shop — internal work-order board.</p>
+    <p class="footer-meta">Built for the shop floor. Works offline-first; retries automatically on a weak connection.</p>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="alert" aria-live="assertive" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
